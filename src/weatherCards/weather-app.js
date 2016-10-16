@@ -6,10 +6,12 @@ class WeatherApp extends Component {
    constructor() {
       super();
       this.apiKey = "203db91b6ef9161c9705dd8f525dfb11";
-      this.city = "London";
+      this.city = null;
+      this.weatherIconUrl = "http://openweathermap.org/img/w/";
+
       this.state = {
          weatherData: null,
-         weatherIconUrl: "http://openweathermap.org/img/w/"
+         weatherIcon: null
       }
    }
 
@@ -21,7 +23,7 @@ class WeatherApp extends Component {
          .then(data => {
             this.setState({
                weatherData: data,
-               weatherIconUrl: `${this.state.weatherIconUrl}${data.weather[0].icon}.png`
+               weatherIcon: `${this.weatherIconUrl}${data.weather[0].icon}.png`
             });
          })
          .catch(error => {
@@ -29,23 +31,33 @@ class WeatherApp extends Component {
          });
    }
 
-   componentDidMount() {
-      this.loadWeather();  
+   handleFormSubmit = (newCity) => {
+      this.city = newCity;
+      this.loadWeather();
    }
 
    render() {
+
       if (!this.state.weatherData) {
-         return (
-            <div>
-               <Form onChange />
-               <div>Loading...</div>;
-         </div>
-         )
+         if (this.city != null) {
+            return (
+               <div>
+                  <Form onFormSubmit={this.handleFormSubmit} />
+                  <div>Loading...</div>;
+               </div>
+            )
+         } else {
+            return (
+               <div>
+                  <Form onFormSubmit={this.handleFormSubmit} />
+               </div>
+            )
+         }
       } else {
          return (
             <div>
-               <Form onChange />
-               <Card data={this.state.weatherData} icon={this.state.weatherIconUrl} />
+               <Form onFormSubmit={this.handleFormSubmit} />
+               <Card data={this.state.weatherData} icon={this.state.weatherIcon} />
             </div>
          )
       }
